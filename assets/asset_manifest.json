@@ -1,0 +1,14 @@
+{
+    "textures": {
+        "heart": {
+            "path": "assets/sprites/heart-leaf.png",
+            "scale_x": 128,
+            "scale_y": 128
+        },
+        "protector": {
+            "path": "assets/sprites/protector.png",
+            "scale_x": 64,
+            "scale_y": 64
+        }
+    }
+}
