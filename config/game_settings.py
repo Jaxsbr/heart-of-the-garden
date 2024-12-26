@@ -2,8 +2,9 @@ class GameSettings:
     def __init__(self):
         self.protector_speed = 70
         self.protector_start = (100, 100)
+        self.protector_size = (128, 128) # TODO: have manifest read from here VS hard coding texture size
         self.protector_rotation_speed = 10
-        self.protector_target_reach_distance = 10 # TODO: calculate distance threshold based protectors radius
+        self.protector_target_reach_distance = 25 # TODO: calculate distance threshold based protectors radius
         self.protector_min_speed = 0  # Could be a small value to simulate drift
         self.protector_acceleration_rate = 90  # Adjust for how quickly the entity accelerates
         self.protector_deceleration_rate = 80  # Adjust for how quickly the entity decelerates
@@ -11,9 +12,11 @@ class GameSettings:
         self.protector_steering_force = 0.1 # Steer from current target to new target
 
         self.enemy_speed = 2
+        self.enemy_size = (128, 128)
 
         self.heart_health = 10
         self.heart_start = (300, 300)
+        self.heart_size = (256, 256)
 
         self.plant_health = 5
         self.screen_width = 800

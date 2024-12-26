@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from enum import Enum
 from core.direction import Direction
 import pygame
 
@@ -11,12 +10,39 @@ class Component():
     DIRECTION = "direction_component"
     DIRECTIONAL_ROTATION = "directional_rotation_component"
     SPRITE = "sprite_component"
+    HEALTH = "health_component"
+    ENEMY_AI = "enemy_ai_component"
+    ATTACKABLE = "attackable_component"
+    SELECTION = "selection_component"
 
 
 @dataclass
-class PositionComponent:
+class PositionComponent(pygame.sprite.Sprite):
     x: float
     y: float
+    w: float
+    h: float
+
+    def get_center(self):
+        return (
+            self.x + self.w / 2,
+            self.y + self.h / 2)
+
+
+    def get_bounds(self) -> pygame.Rect:
+        return pygame.Rect(self.x, self.y, self.w, self.h)
+
+
+    def within_center_distance(self, distance, point):
+        center_pos = self.get_center()
+        x = point[0] - center_pos[0]
+        y = point[1] - center_pos[1]
+        distance_to_target = (x**2 + y**2)**0.5
+        return distance >= distance_to_target
+
+
+    def contains_point(self, point) -> bool:
+        return self.get_bounds().collidepoint(point[0], point[1])
 
 
 @dataclass
@@ -58,3 +84,26 @@ class DirectionalRotationComponent:
 @dataclass
 class SpriteComponent:
     texture: pygame.Surface
+
+
+@dataclass
+class HealthComponent:
+    hp: int
+    max_hp: int
+    remaining_hp_percentage: float = field(default=100)
+    alive: bool = field(default=False)
+
+
+@dataclass
+class EnemyAIComponent:
+    has_attack_target: bool | None = field(default=False)
+
+
+@dataclass
+class AttackableComponent:
+    attack_priority: int
+
+
+@dataclass
+class SelectionComponent:
+    is_selected: bool = field(default=False)

@@ -1,41 +1,78 @@
 import pygame
-from core.entities.heart import Heart
-from core.entities.protector import Protector
-
-SPRITE_COMPONENT = "sprite_component"
-POSITION_COMPONENT = "position_component"
-DIRECTIONAL_ROTATION_COMPONENT = "directional_rotation_component"
+from core.components import Component, PositionComponent
 
 class RenderSystem:
-    def __init__(self):
-        pass
-
     def render(self, entities, screen):
         for entity in entities:
-            requires_rotation = hasattr(entity, DIRECTIONAL_ROTATION_COMPONENT)
+            if not self._has_valid_components(entity):
+                continue
 
-            if (hasattr(entity, SPRITE_COMPONENT) and
-                hasattr(entity, POSITION_COMPONENT) and not
-                requires_rotation):
+            position_component: PositionComponent = entity.position_component
 
+            requires_rotation = self._has_directional_rotation(entity)
+            if requires_rotation:
+                self._render_rotated(screen, entity)
+
+                # TODO: extract "10" from proper settings
+                if entity.selection_component.is_selected:
+                    center_pos = position_component.get_center()
+                    pygame.draw.rect(
+                        screen,
+                        "green",
+                        pygame.Rect(
+                            center_pos[0] - position_component.w / 4,
+                            position_component.y - 10,
+                            position_component.w / 2,
+                            10))
+            else:
                 self._render(
                     screen,
                     entity.sprite_component.texture,
-                    (entity.position_component.x, entity.position_component.y))
+                    (position_component.x, position_component.y),
+                    entity)
 
-            elif (hasattr(entity, SPRITE_COMPONENT) and
-                hasattr(entity, POSITION_COMPONENT) and
-                requires_rotation):
-                self._render_rotated(screen, entity)
+                # TODO: extract "10" from proper settings
+                if entity.selection_component.is_selected:
+                    center_pos = position_component.get_center()
+                    pygame.draw.rect(
+                        screen,
+                        "green",
+                        pygame.Rect(
+                            position_component.x,
+                            position_component.y - 10,
+                            position_component.w / 2,
+                            10))
+
+
+    def _has_valid_components(self, entity) -> bool:
+        return (
+            hasattr(entity, Component.SPRITE) and
+            hasattr(entity, Component.POSITION))
+
+
+    def _has_directional_rotation(self, entity) -> bool:
+        return hasattr(entity, Component.DIRECTIONAL_ROTATION)
 
 
     def _render_rotated(self, screen, entity):
         rotated_image = pygame.transform.rotate(
             entity.sprite_component.texture,
             -entity.directional_rotation_component.degrees)
-        rotated_rect = rotated_image.get_rect(center=(entity.position_component.x, entity.position_component.y))
-        self._render(screen, rotated_image, rotated_rect.topleft)
+        center_pos = entity.position_component.get_center()
+        rotated_rect = rotated_image.get_rect(center=(center_pos[0], center_pos[1]))
+        self._render(screen, rotated_image, rotated_rect.topleft, entity)
 
 
-    def _render(self, screen, surface, pos):
-        screen.blit(surface, pos)
+    def _render(self, screen, surface, pos, entity):
+        pygame.draw.rect(screen, "blue", entity.position_component.get_bounds())
+
+        pygame.draw.circle(screen, "red", (entity.position_component.x, entity.position_component.y), 5)
+
+        center_pos = entity.position_component.get_center()
+        pygame.draw.circle(screen, "pink", center_pos, 5)
+
+        if hasattr(entity, Component.MOVEMENT):
+            if entity.movement_component.target_x is not None and entity.movement_component.target_y is not None:
+                pygame.draw.circle(screen, "orange", (entity.movement_component.target_x, entity.movement_component.target_y), 20)
+
+        # screen.blit(surface, pos)

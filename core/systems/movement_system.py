@@ -20,7 +20,7 @@ class MovementSystem:
             self._apply_accelerate_and_decelerate(delta, movement_component)
             self._calculate_velocity(delta, movement_component, direction_component, velocity_component)
             self._apply_velocity(position_component, velocity_component)
-            self._update_move_target(movement_component, position_component)
+            self._update_move_target(movement_component, position_component, velocity_component)
 
 
     def _has_valid_components(self, entity) -> bool:
@@ -39,8 +39,9 @@ class MovementSystem:
             direction_component.normalized_x = None
             direction_component.normalized_y = None
         else:
-            dx = tx - position_component.x
-            dy = ty - position_component.y
+            center_pos = position_component.get_center()
+            dx = tx - center_pos[0]
+            dy = ty - center_pos[1]
 
             if dx == 0 and dy == 0:
                 return (0, 0)  # Avoid division by zero
@@ -129,11 +130,16 @@ class MovementSystem:
         position_component.y += velocity_component.y
 
 
-    def _update_move_target(self, movement_component: MovementComponent, position_component: PositionComponent):
+    def _update_move_target(self, movement_component: MovementComponent, position_component: PositionComponent, velocity_component: VelocityComponent):
         if movement_component.target_x is None or movement_component.target_y is None:
+            velocity_component.x = 0
+            velocity_component.y = 0
             return
 
-        distance = math.sqrt((movement_component.target_x - position_component.x)**2 + (movement_component.target_y - position_component.y)**2)
+        center_pos = position_component.get_center()
+
+
+        distance = math.sqrt((movement_component.target_x - center_pos[0])**2 + (movement_component.target_y - center_pos[1])**2)
         if distance <= movement_component.target_reach_distance:
             movement_component.target_x = None
             movement_component.target_y = None
