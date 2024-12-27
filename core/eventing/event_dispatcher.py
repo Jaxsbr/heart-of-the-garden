@@ -9,7 +9,8 @@ from core.eventing.base_event import BaseEvent
 class EventDispatcher:
     listeners: dict[str, Any] = field(default_factory=dict)
 
-    def register_listener(self, listener, key: str):
+    def register_listener(self, listener):
+        key = listener.__class__.__name__
         self.listeners[key] = listener
 
 

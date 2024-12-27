@@ -14,6 +14,7 @@ class Component():
     ENEMY_AI = "enemy_ai_component"
     ATTACKABLE = "attackable_component"
     SELECTION = "selection_component"
+    CONTROLLABLE = "controllable_component"
 
 
 @dataclass
@@ -107,3 +108,7 @@ class AttackableComponent:
 @dataclass
 class SelectionComponent:
     is_selected: bool = field(default=False)
+
+
+class ControllableComponent:
+    pass

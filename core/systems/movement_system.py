@@ -32,22 +32,18 @@ class MovementSystem:
 
 
     def _calculate_direction(self, movement_component: MovementComponent, position_component: PositionComponent, direction_component: DirectionComponent):
-        tx = movement_component.target_x
-        ty = movement_component.target_y
-
-        if tx is None or ty is None:
+        if movement_component.target_x is None or movement_component.target_y is None:
             direction_component.normalized_x = None
             direction_component.normalized_y = None
         else:
             center_pos = position_component.get_center()
-            dx = tx - center_pos[0]
-            dy = ty - center_pos[1]
+            dx = movement_component.target_x - center_pos[0]
+            dy = movement_component.target_y - center_pos[1]
 
             if dx == 0 and dy == 0:
                 return (0, 0)  # Avoid division by zero
 
             magnitude = math.sqrt(dx**2 + dy**2)
-
             direction_component.normalized_x = dx / magnitude
             direction_component.normalized_y = dy / magnitude
 
@@ -56,8 +52,9 @@ class MovementSystem:
         if movement_component.target_x is None or movement_component.target_y is None:
             return
 
-        target_vector_x = movement_component.target_x - position_component.x
-        target_vector_y = movement_component.target_y - position_component.y
+        center_pos = position_component.get_center()
+        target_vector_x = movement_component.target_x - center_pos[0]
+        target_vector_y = movement_component.target_y - center_pos[1]
         movement_component.distance_to_target = (target_vector_x**2 + target_vector_y**2)**0.5
 
         if movement_component.distance_to_target is None:
@@ -134,11 +131,10 @@ class MovementSystem:
         if movement_component.target_x is None or movement_component.target_y is None:
             velocity_component.x = 0
             velocity_component.y = 0
+            print('target cancelled')
             return
 
         center_pos = position_component.get_center()
-
-
         distance = math.sqrt((movement_component.target_x - center_pos[0])**2 + (movement_component.target_y - center_pos[1])**2)
         if distance <= movement_component.target_reach_distance:
             movement_component.target_x = None

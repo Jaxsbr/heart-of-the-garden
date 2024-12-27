@@ -47,7 +47,8 @@ class RenderSystem:
     def _has_valid_components(self, entity) -> bool:
         return (
             hasattr(entity, Component.SPRITE) and
-            hasattr(entity, Component.POSITION))
+            hasattr(entity, Component.POSITION) and
+            hasattr(entity, Component.SELECTION))
 
 
     def _has_directional_rotation(self, entity) -> bool:
@@ -64,15 +65,15 @@ class RenderSystem:
 
 
     def _render(self, screen, surface, pos, entity):
-        pygame.draw.rect(screen, "blue", entity.position_component.get_bounds())
+        # pygame.draw.rect(screen, "blue", entity.position_component.get_bounds())
 
-        pygame.draw.circle(screen, "red", (entity.position_component.x, entity.position_component.y), 5)
+        # pygame.draw.circle(screen, "red", (entity.position_component.x, entity.position_component.y), 5)
 
-        center_pos = entity.position_component.get_center()
-        pygame.draw.circle(screen, "pink", center_pos, 5)
+        # center_pos = entity.position_component.get_center()
+        # pygame.draw.circle(screen, "pink", center_pos, 5)
 
-        if hasattr(entity, Component.MOVEMENT):
-            if entity.movement_component.target_x is not None and entity.movement_component.target_y is not None:
-                pygame.draw.circle(screen, "orange", (entity.movement_component.target_x, entity.movement_component.target_y), 20)
+        # if hasattr(entity, Component.MOVEMENT):
+        #     if entity.movement_component.target_x is not None and entity.movement_component.target_y is not None:
+        #         pygame.draw.circle(screen, "orange", (entity.movement_component.target_x, entity.movement_component.target_y), 20)
 
-        # screen.blit(surface, pos)
+        screen.blit(surface, pos)
