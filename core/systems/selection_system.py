@@ -49,6 +49,8 @@ class SelectionSystem:
                 selection_component.is_selected = True
                 return True
         elif mouse_right_clicked: # Deselected
+            
+
             selection_component.is_selected = False
             return True
         return False

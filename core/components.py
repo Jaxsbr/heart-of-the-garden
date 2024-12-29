@@ -15,6 +15,7 @@ class Component():
     ATTACKABLE = "attackable_component"
     SELECTION = "selection_component"
     CONTROLLABLE = "controllable_component"
+    ENCOUNTER = "encounter_component"
 
 
 @dataclass
@@ -32,6 +33,11 @@ class PositionComponent(pygame.sprite.Sprite):
 
     def get_bounds(self) -> pygame.Rect:
         return pygame.Rect(self.x, self.y, self.w, self.h)
+
+
+    def intersects(self, rect: pygame.Rect) -> bool:
+        bounds = self.get_bounds()
+        return bounds.colliderect(rect)
 
 
     def within_center_distance(self, distance, point):
@@ -112,3 +118,19 @@ class SelectionComponent:
 
 class ControllableComponent:
     pass
+
+
+@dataclass
+class EncounterComponent:
+    encounter_points: int = field(default=0)
+    max_encounter_points_reached: bool = field(default=False)
+    is_fleeing: bool = field(default=False)
+    flee_tick: float = field(default=10)
+    flee_elapsed: float = field(default=0)
+
+
+@dataclass
+class FleeComponent:
+    is_fleeing: bool = field(default=False)
+    flee_tick: float = field(default=10)
+    flee_elapsed: float = field(default=0)

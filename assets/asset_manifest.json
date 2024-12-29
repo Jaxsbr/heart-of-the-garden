@@ -9,6 +9,11 @@
             "path": "assets/sprites/protector.png",
             "scale_x": 128,
             "scale_y": 128
+        },
+        "spider": {
+            "path": "assets/sprites/spider.png",
+            "scale_x": 128,
+            "scale_y": 128
         }
     }
 }

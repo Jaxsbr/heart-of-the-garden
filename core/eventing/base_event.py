@@ -4,5 +4,5 @@ from typing import Any
 @dataclass
 class BaseEvent():
     event_name: str
-    args: dict[str, Any] = field(default_factory=dict)
+    event_data: Any | None = field(default=None)
     id: str = field(default="")

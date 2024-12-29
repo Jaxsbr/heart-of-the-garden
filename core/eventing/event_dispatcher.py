@@ -23,5 +23,5 @@ class EventDispatcher:
             event.id = str(uuid.uuid4())
         for key, listener in self.listeners.items():
             handled = listener.on_event(event)
-            if handled:
-                print(f"{key}: {event.id} EVENT: {event.event_name}")
+            # if handled:
+            #     print(f"{key}: {event.id} EVENT: {event.event_name}")

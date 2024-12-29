@@ -68,8 +68,7 @@ class EntityControlSystem:
 
             # ATM we assume this is the Protector
             mouse_clicked = pygame.mouse.get_pressed()[0]
-            if mouse_clicked and entity.selection_component.is_selected:
-                print('selected target set')
+            if mouse_clicked:# and entity.selection_component.is_selected:
                 self.target_setting = True
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 entity.movement_component.target_x = mouse_x

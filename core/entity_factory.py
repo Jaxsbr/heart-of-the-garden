@@ -71,7 +71,7 @@ class EntityFactory:
                 w=self.game_settings.protector_size[0],
                 h=self.game_settings.protector_size[1]),
             sprite_component=SpriteComponent(
-                texture=self._get_texture("protector")),
+                texture=self._get_texture("spider")),
             directional_rotation_component=DirectionalRotationComponent(
                 direction=Direction.EAST,
                 rotation_speed=self.game_settings.protector_rotation_speed),

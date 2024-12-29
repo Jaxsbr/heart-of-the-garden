@@ -11,5 +11,5 @@ class Protector(BaseEntity):
     controllable_component: ControllableComponent = field(init=False)
 
     def __post_init__(self):
-        super().__post_init__()
         self.controllable_component = ControllableComponent()
+        super().__post_init__()

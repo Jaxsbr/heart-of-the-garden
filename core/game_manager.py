@@ -2,6 +2,7 @@ from core.entities.enemy import Enemy
 from core.entity_factory import EntityFactory
 from core.eventing.event_dispatcher import EventDispatcher
 from core.systems.directional_rotation_system import DirectionalRotationSystem
+from core.systems.encounter_system import EncounterSystem
 from core.systems.enemy_ai_system import EnemyAISystem
 from core.systems.enemy_spawn_system import EnemySpawnSystem
 from core.systems.entity_control_system import EntityControlSystem
@@ -29,10 +30,10 @@ class GameManager:
         self._entities.append(self._protector)
 
         self._enemy_spawn_system = EnemySpawnSystem()
-        self._enemy_ai_system = EnemyAISystem()
-
+        self._enemy_ai_system = EnemyAISystem(self.event_dispatcher)
         self._selection_system = SelectionSystem(self.event_dispatcher)
         self._entity_control_system = EntityControlSystem(self.event_dispatcher)
+        self._encounter_system = EncounterSystem(self.event_dispatcher)
 
 
     def _create_enemy(self) -> Enemy:
@@ -52,6 +53,7 @@ class GameManager:
         self._enemy_ai_system.update(self._entities, delta)
         self._selection_system.update(delta, self._entities)
         self._entity_control_system.update(delta, self._entities)
+        self._encounter_system.update(delta, self._entities)
 
 
     def draw(self):

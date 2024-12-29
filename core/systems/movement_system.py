@@ -131,7 +131,7 @@ class MovementSystem:
         if movement_component.target_x is None or movement_component.target_y is None:
             velocity_component.x = 0
             velocity_component.y = 0
-            print('target cancelled')
+            # print('target cancelled')
             return
 
         center_pos = position_component.get_center()

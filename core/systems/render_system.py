@@ -14,16 +14,17 @@ class RenderSystem:
                 self._render_rotated(screen, entity)
 
                 # TODO: extract "10" from proper settings
-                if entity.selection_component.is_selected:
-                    center_pos = position_component.get_center()
-                    pygame.draw.rect(
-                        screen,
-                        "green",
-                        pygame.Rect(
-                            center_pos[0] - position_component.w / 4,
-                            position_component.y - 10,
-                            position_component.w / 2,
-                            10))
+                # if entity.selection_component.is_selected:
+                color = "green"
+                center_pos = position_component.get_center()
+                pygame.draw.rect(
+                    screen,
+                    color,
+                    pygame.Rect(
+                        center_pos[0] - position_component.w / 4,
+                        position_component.y - 10,
+                        position_component.w / 2,
+                        10))
             else:
                 self._render(
                     screen,
@@ -32,16 +33,17 @@ class RenderSystem:
                     entity)
 
                 # TODO: extract "10" from proper settings
-                if entity.selection_component.is_selected:
-                    center_pos = position_component.get_center()
-                    pygame.draw.rect(
-                        screen,
-                        "green",
-                        pygame.Rect(
-                            position_component.x,
-                            position_component.y - 10,
-                            position_component.w / 2,
-                            10))
+                # if entity.selection_component.is_selected:
+                color = "green"
+                center_pos = position_component.get_center()
+                pygame.draw.rect(
+                    screen,
+                    color,
+                    pygame.Rect(
+                        center_pos[0] - position_component.w / 4,
+                        position_component.y - 10,
+                        position_component.w / 2,
+                        10))
 
 
     def _has_valid_components(self, entity) -> bool:
