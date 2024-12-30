@@ -31,25 +31,25 @@ class EntityFactory:
         self, bounds: pygame.Rect, sprite_component: SpriteComponent
     ) -> Entity:
         base_entity = Entity(
-            position_component = PositionComponent(
+            position_component=PositionComponent(
                 x=bounds.x,
                 y=bounds.y,
                 w=bounds.w,
                 h=bounds.h,
             ),
-            sprite_component = sprite_component,
-            velocity_component = VelocityComponent(),
-            direction_component = DirectionComponent()
+            sprite_component=sprite_component,
+            velocity_component=VelocityComponent(),
+            direction_component=DirectionComponent(),
         )
         base_entity.add_component(SelectionComponent())
         base_entity.add_component(EncounterComponent())
         return base_entity
 
     def create_heart(self):
-        left=self.game_settings.heart_start[0]
-        top=self.game_settings.heart_start[1]
-        width=self.game_settings.heart_size[0]
-        height=self.game_settings.heart_size[1]
+        left = self.game_settings.heart_start[0]
+        top = self.game_settings.heart_start[1]
+        width = self.game_settings.heart_size[0]
+        height = self.game_settings.heart_size[1]
         heart = self._create_living_entity(
             pygame.Rect(left, top, width, height),
             SpriteComponent(texture=self._get_texture("heart")),
@@ -58,10 +58,10 @@ class EntityFactory:
         return heart
 
     def create_protector(self):
-        left=self.game_settings.protector_start[0]
-        top=self.game_settings.protector_start[1]
-        width=self.game_settings.protector_size[0]
-        height=self.game_settings.protector_size[1]
+        left = self.game_settings.protector_start[0]
+        top = self.game_settings.protector_start[1]
+        width = self.game_settings.protector_size[0]
+        height = self.game_settings.protector_size[1]
         protector = self._create_living_entity(
             pygame.Rect(left, top, width, height),
             SpriteComponent(texture=self._get_texture("protector")),
@@ -94,10 +94,10 @@ class EntityFactory:
     def create_enemy(self):
         # TODO: Using protector settings atm
         #       Replace with per enemy type config\
-        left=300
-        top=50
-        width=self.game_settings.protector_size[0]
-        height=self.game_settings.protector_size[1]
+        left = 300
+        top = 50
+        width = self.game_settings.protector_size[0]
+        height = self.game_settings.protector_size[1]
         enemy = self._create_living_entity(
             pygame.Rect(left, top, width, height),
             SpriteComponent(texture=self._get_texture("spider")),

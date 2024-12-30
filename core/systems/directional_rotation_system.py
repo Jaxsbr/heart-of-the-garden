@@ -41,9 +41,7 @@ class DirectionalRotationSystem:
             directional_rotation_component.rotation_speed,
         )
 
-        directional_rotation_component.direction = self._get_direction(
-            current_degrees
-        )
+        directional_rotation_component.direction = self._get_direction(current_degrees)
 
     def _lerp_angle(self, current, target, step):
         """Linearly interpolate between two angles, handling wrapping."""

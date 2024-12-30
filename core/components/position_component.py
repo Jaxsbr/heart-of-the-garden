@@ -4,6 +4,7 @@ import pygame
 
 from core.components.living_entity_component import LivingEntityComponent
 
+
 @dataclass
 class PositionComponent(LivingEntityComponent):
     x: float

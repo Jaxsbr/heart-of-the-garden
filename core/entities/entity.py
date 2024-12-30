@@ -13,7 +13,13 @@ T = TypeVar("T", bound="Component")
 
 
 class Entity(BaseEntity):
-    def __init__(self, position_component: PositionComponent, sprite_component: SpriteComponent, velocity_component: VelocityComponent, direction_component: DirectionComponent):
+    def __init__(
+        self,
+        position_component: PositionComponent,
+        sprite_component: SpriteComponent,
+        velocity_component: VelocityComponent,
+        direction_component: DirectionComponent,
+    ):
         self._position = position_component
         self._sprite = sprite_component
         self._velocity = velocity_component

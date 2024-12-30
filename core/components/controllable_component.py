@@ -1,5 +1,3 @@
-
-
 from core.components.component import Component
 
 

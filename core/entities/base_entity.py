@@ -5,6 +5,7 @@ from core.components.position_component import PositionComponent
 from core.components.sprite_component import SpriteComponent
 from core.components.velocity_component import VelocityComponent
 
+
 class BaseEntity(ABC):
     @property
     @abstractmethod

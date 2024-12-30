@@ -3,7 +3,6 @@ from dataclasses import dataclass, field
 from core.components.component import Component
 
 
-
 @dataclass
 class EncounterComponent(Component):
     encounter_points: int = field(default=0)
