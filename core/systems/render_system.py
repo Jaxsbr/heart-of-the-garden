@@ -1,17 +1,27 @@
 import pygame
-from core.components import Component, PositionComponent
+
+from core.components.directional_rotation_component import DirectionalRotationComponent
+from core.components.position_component import PositionComponent
+from core.components.sprite_component import SpriteComponent
+from core.entities.entity import Entity
+
 
 class RenderSystem:
-    def render(self, entities, screen):
+    def render(self, entities: list[Entity], screen):
         for entity in entities:
-            if not self._has_valid_components(entity):
-                continue
-
             position_component: PositionComponent = entity.position_component
 
-            requires_rotation = self._has_directional_rotation(entity)
-            if requires_rotation:
-                self._render_rotated(screen, entity)
+            directional_rotation_component = entity.get_component(
+                DirectionalRotationComponent
+            )
+            if directional_rotation_component is not None:
+                sprite_component = entity.sprite_component
+                self._render_rotated(
+                    screen,
+                    sprite_component,
+                    position_component,
+                    directional_rotation_component,
+                )
 
                 # TODO: extract "10" from proper settings
                 # if entity.selection_component.is_selected:
@@ -24,13 +34,15 @@ class RenderSystem:
                         center_pos[0] - position_component.w / 4,
                         position_component.y - 10,
                         position_component.w / 2,
-                        10))
+                        10,
+                    ),
+                )
             else:
                 self._render(
                     screen,
                     entity.sprite_component.texture,
                     (position_component.x, position_component.y),
-                    entity)
+                )
 
                 # TODO: extract "10" from proper settings
                 # if entity.selection_component.is_selected:
@@ -43,30 +55,26 @@ class RenderSystem:
                         center_pos[0] - position_component.w / 4,
                         position_component.y - 10,
                         position_component.w / 2,
-                        10))
+                        10,
+                    ),
+                )
 
-
-    def _has_valid_components(self, entity) -> bool:
-        return (
-            hasattr(entity, Component.SPRITE) and
-            hasattr(entity, Component.POSITION) and
-            hasattr(entity, Component.SELECTION))
-
-
-    def _has_directional_rotation(self, entity) -> bool:
-        return hasattr(entity, Component.DIRECTIONAL_ROTATION)
-
-
-    def _render_rotated(self, screen, entity):
+    def _render_rotated(
+        self,
+        screen,
+        sprite_component: SpriteComponent,
+        position_component: PositionComponent,
+        directional_rotation_component: DirectionalRotationComponent,
+    ):
         rotated_image = pygame.transform.rotate(
-            entity.sprite_component.texture,
-            -entity.directional_rotation_component.degrees)
-        center_pos = entity.position_component.get_center()
+            sprite_component.texture,
+            -directional_rotation_component.degrees,
+        )
+        center_pos = position_component.get_center()
         rotated_rect = rotated_image.get_rect(center=(center_pos[0], center_pos[1]))
-        self._render(screen, rotated_image, rotated_rect.topleft, entity)
+        self._render(screen, rotated_image, rotated_rect.topleft)
 
-
-    def _render(self, screen, surface, pos, entity):
+    def _render(self, screen, surface, pos):
         # pygame.draw.rect(screen, "blue", entity.position_component.get_bounds())
 
         # pygame.draw.circle(screen, "red", (entity.position_component.x, entity.position_component.y), 5)

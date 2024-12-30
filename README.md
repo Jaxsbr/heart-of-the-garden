@@ -15,3 +15,7 @@
 
 ![alt text](/docs/image1.png)
 ![alt text](/docs/image2.png)
+
+## Formatting
+
+`ruff format`

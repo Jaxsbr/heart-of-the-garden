@@ -1,4 +1,4 @@
-from core.entities.enemy import Enemy
+from core.entities.entity import Entity
 from core.entity_factory import EntityFactory
 from core.eventing.event_dispatcher import EventDispatcher
 from core.systems.directional_rotation_system import DirectionalRotationSystem
@@ -11,6 +11,7 @@ from core.systems.render_system import RenderSystem
 import pygame
 
 from core.systems.selection_system import SelectionSystem
+
 
 class GameManager:
     def __init__(self, screen, entity_factory: EntityFactory):
@@ -35,16 +36,13 @@ class GameManager:
         self._entity_control_system = EntityControlSystem(self.event_dispatcher)
         self._encounter_system = EncounterSystem(self.event_dispatcher)
 
-
-    def _create_enemy(self) -> Enemy:
+    def _create_enemy(self) -> Entity:
         enemy = self.entity_factory.create_enemy()
         self._entities.append(enemy)
         return enemy
 
-
     def handle_event(self, event):
         pass
-
 
     def update(self, delta):
         self._movement_system.update(self._entities, delta)
@@ -55,7 +53,5 @@ class GameManager:
         self._entity_control_system.update(delta, self._entities)
         self._encounter_system.update(delta, self._entities)
 
-
     def draw(self):
         self._render_system.render(self._entities, self.screen)
-

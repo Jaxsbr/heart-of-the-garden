@@ -13,10 +13,8 @@ class EventDispatcher:
         key = listener.__class__.__name__
         self.listeners[key] = listener
 
-
     def deregister_listener(self, listener, key: str):
         del self.listeners[key]
-
 
     def dispatch(self, event: BaseEvent):
         if event.id == "":

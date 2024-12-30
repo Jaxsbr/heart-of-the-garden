@@ -1,6 +1,7 @@
 from core.resources.asset_loader import load_texture
 from core.resources.resource_type import ResourceType
 
+
 class ResourceManager:
     def __init__(self):
         self.cache = {}

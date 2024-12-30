@@ -1,22 +1,27 @@
-from dataclasses import dataclass, field
-import uuid
+from abc import ABC, abstractmethod
 
-from core.components import DirectionComponent, EncounterComponent, PositionComponent, SelectionComponent, SpriteComponent, VelocityComponent
+from core.components.direction_component import DirectionComponent
+from core.components.position_component import PositionComponent
+from core.components.sprite_component import SpriteComponent
+from core.components.velocity_component import VelocityComponent
 
+class BaseEntity(ABC):
+    @property
+    @abstractmethod
+    def position_component(self) -> PositionComponent:
+        pass
 
-@dataclass
-class BaseEntity():
-    position_component: PositionComponent
-    sprite_component: SpriteComponent
-    velocity_component: VelocityComponent = field(init=False)
-    direction_component: DirectionComponent = field(init=False)
-    selection_component: SelectionComponent = field(init=False)
-    encounter_component: EncounterComponent = field(init=False)
-    entity_id: str = field(init=False)
+    @property
+    @abstractmethod
+    def sprite_component(self) -> SpriteComponent:
+        pass
 
-    def __post_init__(self):
-        self.entity_id = str(uuid.uuid4())
-        self.velocity_component = VelocityComponent()
-        self.direction_component = DirectionComponent()
-        self.selection_component = SelectionComponent()
-        self.encounter_component = EncounterComponent()
+    @property
+    @abstractmethod
+    def velocity_component(self) -> VelocityComponent:
+        pass
+
+    @property
+    @abstractmethod
+    def direction_component(self) -> DirectionComponent:
+        pass

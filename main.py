@@ -2,9 +2,9 @@ from config.game_settings import GameSettings
 from core.entity_factory import EntityFactory
 from core.resources.manifest import AssetManifest
 from core.resources.resource_manager import ResourceManager
-from core.resources.resource_type import ResourceType
 import pygame
 from core.game_manager import GameManager
+
 
 def main():
     pygame.init()
@@ -37,6 +37,7 @@ def main():
         game_manager.draw()
         pygame.display.flip()
     pygame.quit()
+
 
 if __name__ == "__main__":
     main()

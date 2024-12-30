@@ -1,5 +1,6 @@
 import json
 
+
 class AssetManifest:
     def __init__(self, file_path):
         self.file_path = file_path
@@ -8,7 +9,7 @@ class AssetManifest:
 
     def _load(self):
         try:
-            with open(self.file_path, 'r') as file:
+            with open(self.file_path, "r") as file:
                 self.data = json.load(file)
         except Exception as e:
             raise RuntimeError(f"Failed to load manifest: {e}")
