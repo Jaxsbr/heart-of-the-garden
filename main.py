@@ -4,22 +4,26 @@ from core.resources.manifest import AssetManifest
 from core.resources.resource_manager import ResourceManager
 import pygame
 from core.game_manager import GameManager
+from core.screen_scroll_manager import ScreenScrollManager
 
 
 def main():
     pygame.init()
-    screen_width = 1240
     clock = pygame.time.Clock()
-    screen_height = 680
-    screen = pygame.display.set_mode((screen_width, screen_height))
+    game_settings = GameSettings()
+    screen_size = game_settings.world_bounds
+    screen = pygame.display.set_mode(screen_size)
     pygame.display.set_caption("Heart of the Garden")
 
     asset_manifest = AssetManifest("assets/asset_manifest.json")
     resource_manager = ResourceManager()
-    game_settings = GameSettings()
     entity_factory = EntityFactory(asset_manifest, resource_manager, game_settings)
-
-    game_manager = GameManager(screen, entity_factory)
+    screen_scroll_manager = ScreenScrollManager(
+        screen_size, asset_manifest, resource_manager
+    )
+    game_manager = GameManager(
+        screen, screen_size, entity_factory, screen_scroll_manager
+    )
 
     # Game loop
     running = True

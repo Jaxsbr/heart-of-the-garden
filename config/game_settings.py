@@ -1,7 +1,9 @@
 class GameSettings:
     def __init__(self):
+        self.world_bounds = (1240, 680)
+
         self.protector_speed = 70
-        self.protector_start = (100, 100)
+        self.protector_start = (0, 0)
         self.protector_size = (
             128,
             128,

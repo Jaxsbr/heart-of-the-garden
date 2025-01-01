@@ -5,5 +5,7 @@ from core.components.living_entity_component import LivingEntityComponent
 
 
 @dataclass
-class EnemyAIComponent(Component):
-    has_attack_target: bool | None = field(default=False)
+class RetreatComponent(Component):
+    is_retreating: bool = field(default=False)
+    retreat_tick: float = field(default=10)
+    retreat_elapsed: float = field(default=0)

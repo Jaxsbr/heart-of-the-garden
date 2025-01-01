@@ -33,10 +33,10 @@ class EntityControlSystem:
             return True
         return False
 
-    def update(self, delta, entities: list[Entity]):
+    def update(self, delta, entities: list[Entity], screen_offset):
         self._update_selection_timing(delta)
         self._update_target_setting_timing(delta)
-        self._update_movement_target(entities)
+        self._update_movement_target(entities, screen_offset)
 
     def _update_selection_timing(self, delta):
         if self.selection_elapsed >= self.selection_tick:
@@ -54,7 +54,7 @@ class EntityControlSystem:
         if self.target_setting:
             self.target_set_elapsed += delta * 1
 
-    def _update_movement_target(self, entities: list[Entity]):
+    def _update_movement_target(self, entities: list[Entity], screen_offset):
         if self.selecting or self.target_setting:
             return
 
@@ -69,5 +69,5 @@ class EntityControlSystem:
             if mouse_clicked:  # and entity.selection_component.is_selected:
                 self.target_setting = True
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                movement_component.target_x = mouse_x
-                movement_component.target_y = mouse_y
+                movement_component.target_x = mouse_x - screen_offset[0]
+                movement_component.target_y = mouse_y - screen_offset[1]

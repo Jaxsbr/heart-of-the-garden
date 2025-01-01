@@ -14,6 +14,16 @@
             "path": "assets/sprites/spider.png",
             "scale_x": 128,
             "scale_y": 128
+        },
+        "scroll_horizontal": {
+            "path": "assets/scrolling/horizontal.png",
+            "scale_x": 200,
+            "scale_y": 20
+        },
+        "scroll_vertical": {
+            "path": "assets/scrolling/vertical.png",
+            "scale_x": 20,
+            "scale_y": 200
         }
     }
 }
