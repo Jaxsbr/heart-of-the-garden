@@ -2,18 +2,18 @@
     "textures": {
         "heart": {
             "path": "assets/sprites/heart-leaf.png",
-            "scale_x": 256,
-            "scale_y": 256
+            "scale_x": 128,
+            "scale_y": 128
         },
         "protector": {
             "path": "assets/sprites/protector.png",
-            "scale_x": 128,
-            "scale_y": 128
+            "scale_x": 64,
+            "scale_y": 64
         },
         "spider": {
             "path": "assets/sprites/spider.png",
-            "scale_x": 128,
-            "scale_y": 128
+            "scale_x": 64,
+            "scale_y": 64
         },
         "scroll_horizontal": {
             "path": "assets/scrolling/horizontal.png",

@@ -4,6 +4,7 @@ import random
 import pygame
 from config.game_settings import GameSettings
 from core.components.attackable_component import AttackableComponent
+from core.components.collision_component import CollisionComponent
 from core.components.controllable_component import ControllableComponent
 from core.components.direction_component import DirectionComponent
 from core.components.directional_rotation_component import DirectionalRotationComponent
@@ -65,6 +66,7 @@ class EntityFactory:
             ),
         )
         heart.add_component(AttackableComponent(attack_priority=AttackPriority.HIGH))
+        heart.add_component(CollisionComponent(weight=self.game_settings.heart_weight))
         return heart
 
     def create_protector(self):
@@ -105,6 +107,9 @@ class EntityFactory:
         protector.add_component(
             RetreatBehaviorComponent(move_type=RetreatMoveTypes.BOLT)
         )
+        protector.add_component(
+            CollisionComponent(weight=self.game_settings.protector_weight)
+        )
         return protector
 
     def create_plant(self):
@@ -112,29 +117,33 @@ class EntityFactory:
         pass
 
     def create_enemy(self, start_pos: pygame.Vector2):
-        # TODO: Using protector settings atm
-        #       Replace with per enemy type config\
-        width = self.game_settings.protector_size[0]
-        height = self.game_settings.protector_size[1]
+        enemy_packet = self.get_variable_enemy_packet()
+        width = enemy_packet[2]
+        height = enemy_packet[3]
         enemy = self._create_living_entity(
             pygame.Rect(start_pos.x, start_pos.y, width, height),
             SpriteComponent(
                 texture=get_texture_resource(
-                    self.asset_manifest, self.resource_manager, "spider"
+                    self.asset_manifest,
+                    self.resource_manager,
+                    "spider",
+                    width,
+                    height,
+                    enemy_packet[0],
                 ),
-                width=self.game_settings.protector_size[0],
-                height=self.game_settings.protector_size[1],
+                width=width,
+                height=height,
             ),
         )
         enemy.add_component(
             MovementComponent(
-                speed=self.game_settings.protector_speed,
-                min_speed=self.game_settings.protector_min_speed,
-                acceleration_rate=self.game_settings.protector_acceleration_rate,
-                deceleration_rate=self.game_settings.protector_deceleration_rate,
-                slow_down_distance=self.game_settings.protector_slowdown_distance,
-                target_reach_distance=self.game_settings.protector_target_reach_distance,
-                steering_force=self.game_settings.protector_steering_force,
+                speed=enemy_packet[4],
+                min_speed=self.game_settings.enemy_speed,
+                acceleration_rate=self.game_settings.enemy_acceleration_rate,
+                deceleration_rate=self.game_settings.enemy_deceleration_rate,
+                slow_down_distance=self.game_settings.enemy_slowdown_distance,
+                target_reach_distance=self.game_settings.enemy_target_reach_distance,
+                steering_force=self.game_settings.enemy_steering_force,
             )
         )
         enemy.add_component(
@@ -150,6 +159,7 @@ class EntityFactory:
                 retreat_direction=self.get_random_direction(),
             )
         )
+        enemy.add_component(CollisionComponent(weight=enemy_packet[1]))
         enemy.add_component(EnemyAIComponent())
         return enemy
 
@@ -159,3 +169,11 @@ class EntityFactory:
             y = random.choice([-1, 0, 1])
             if x != 0 or y != 0:  # Ensure movement
                 return (x, y)
+
+    def get_variable_enemy_packet(self) -> tuple[str, float, int, int, float]:
+        # TODO: get base values from game settings and calculate variability here
+        # texture_name, weight, size_w, size_h, speed
+        mini = ("spider_1", 2, 50, 50, 90)
+        med = ("spider_2", 3, 64, 64, 80)
+        max = ("spider_3", 5, 80, 80, 70)
+        return random.choice([mini, med, max])

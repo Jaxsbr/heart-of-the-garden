@@ -3,6 +3,7 @@ from core.entity_factory import EntityFactory
 from core.eventing.event_dispatcher import EventDispatcher
 from core.screen_scroll_manager import ScreenScrollManager
 from core.systems.collision_system import CollisionSystem
+from core.systems.debug_system import DebugSystem
 from core.systems.directional_rotation_system import DirectionalRotationSystem
 from core.systems.enemy_ai_system import EnemyAISystem
 from core.systems.interaction_system import InteractionSystem
@@ -43,6 +44,7 @@ class GameManager:
         self._retreat_system = RetreatSystem(self.screen_size)
         self._retreat_movement_system = RetreatMovementSystem()
         self._collision_system = CollisionSystem()
+        self._debug_system = DebugSystem()
 
         self._heart = self.entity_factory.create_heart()
         self._protector = self.entity_factory.create_protector()
@@ -93,3 +95,4 @@ class GameManager:
 
         self._render_system.render(self._entities, self.screen)
         self.screen_scroll_manager.render(self.screen)
+        self._debug_system.render_debug(self.screen, self._entities)

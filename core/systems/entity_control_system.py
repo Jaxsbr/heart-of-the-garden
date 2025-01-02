@@ -55,7 +55,8 @@ class EntityControlSystem:
             self.target_set_elapsed += delta * 1
 
     def _update_movement_target(self, entities: list[Entity], screen_offset):
-        if self.selecting or self.target_setting:
+        mouse_clicked = pygame.mouse.get_pressed()[0]
+        if not mouse_clicked:
             return
 
         for entity in entities:
@@ -64,10 +65,7 @@ class EntityControlSystem:
             if movement_component is None or controllable_component is None:
                 continue
 
-            # ATM we assume this is the Protector due to controllable component
-            mouse_clicked = pygame.mouse.get_pressed()[0]
-            if mouse_clicked:  # and entity.selection_component.is_selected:
-                self.target_setting = True
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                movement_component.target_x = mouse_x - screen_offset[0]
-                movement_component.target_y = mouse_y - screen_offset[1]
+            self.target_setting = True
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            movement_component.target_x = mouse_x - screen_offset[0]
+            movement_component.target_y = mouse_y - screen_offset[1]

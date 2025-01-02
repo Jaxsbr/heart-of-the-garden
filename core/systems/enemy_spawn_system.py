@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-import random
 from typing import Callable
 
 import pygame
@@ -12,7 +11,7 @@ from core.screen_position_helper import get_random_start_pos
 class EnemySpawnSystem:
     screen_size: tuple[int, int]
     spawn_elapsed: float = field(default=9)
-    spawn_tick: float = field(default=10)
+    spawn_tick: float = field(default=2)
 
     def update(self, delta, create_enemy_function: Callable[[pygame.Vector2], Entity]):
         self._set_spawn_config()

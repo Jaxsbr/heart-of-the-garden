@@ -25,8 +25,8 @@ class InteractionManager:
         # Increment interaction duration
         initiator_interaction_component = initiator.get_component(InteractionComponent)
         initiator_retreat_component = initiator.get_component(RetreatComponent)
-        target_interaction_component = initiator.get_component(InteractionComponent)
-        target_retreat_component = initiator.get_component(RetreatComponent)
+        target_interaction_component = target.get_component(InteractionComponent)
+        target_retreat_component = target.get_component(RetreatComponent)
 
         if (
             initiator_interaction_component is None
@@ -34,10 +34,9 @@ class InteractionManager:
             or target_interaction_component is None
             or target_retreat_component is None
         ):
-            print("Warning: none components")
             return False
 
-        initiator_interaction_component.interaction_duration += 1
+        initiator_interaction_component.interaction_duration += 100
         target_interaction_component.interaction_duration += 1
 
         # Evaluate interaction outcomes
@@ -46,7 +45,7 @@ class InteractionManager:
             initiator_interaction_component.interaction_duration = 0
             return True  # Interaction ends
         elif target_interaction_component.interaction_duration >= max_points:
-            target_retreat_component.is_retreating = True
+            # target_retreat_component.is_retreating = True
             target_interaction_component.interaction_duration = 0
             return True  # Interaction ends
         return False  # Interaction continues

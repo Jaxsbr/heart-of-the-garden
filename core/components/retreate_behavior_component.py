@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field
 
 from core.components.component import Component
-from core.components.living_entity_component import LivingEntityComponent
 from core.retreat_move_types import RetreatMoveTypes
 
 

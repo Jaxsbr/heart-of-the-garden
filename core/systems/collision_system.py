@@ -1,13 +1,17 @@
+from dataclasses import dataclass, field
 import random
+
+import pygame
 from core.components.movement_component import MovementComponent
+from core.components.collision_component import CollisionComponent
 from core.entities.entity import Entity
 
-
+@dataclass
 class CollisionSystem:
-    STEERING_FORCE_MULTIPLIER = 0.01
+    steering_force_multiplier: float = field(default=0.01)
 
-    def apply_steer(self, entity: Entity, dx, dy, delta):
-        """Apply a steering force to the entity's position component."""
+    def apply_steer(self, entity: Entity, dx, dy, delta, weight_ratio):
+        """Apply a weighted steering force to the entity's position component."""
         position_component = entity.position_component
 
         # Introduce random variability in the direction
@@ -15,9 +19,9 @@ class CollisionSystem:
         random_dx = dx * (1 + random.uniform(-variability, variability))
         random_dy = dy * (1 + random.uniform(-variability, variability))
 
-        # Apply the scaled force to the entity's position
-        position_component.x += random_dx * delta
-        position_component.y += random_dy * delta
+        # Scale the force by weight ratio and delta
+        position_component.x += random_dx * delta * weight_ratio
+        position_component.y += random_dy * delta * weight_ratio
 
     def calculate_opposite_direction(self, bounds1, bounds2):
         """Calculate the direction vector from bounds1 to bounds2."""
@@ -29,7 +33,7 @@ class CollisionSystem:
 
         # Normalize the direction vector
         magnitude = (dx**2 + dy**2) ** 0.5
-        magnitude = magnitude * CollisionSystem.STEERING_FORCE_MULTIPLIER
+        magnitude = magnitude * self.steering_force_multiplier
         if magnitude == 0:
             return 0, 0
 
@@ -42,29 +46,73 @@ class CollisionSystem:
         move_entities = [e for e in entities if e.get_component(MovementComponent)]
 
         for move_entity in move_entities:
+            move_collision_component = move_entity.get_component(CollisionComponent)
+            if move_collision_component is None:
+                continue
+            move_weight = move_collision_component.weight
             move_bounds = move_entity.position_component.get_bounds()
 
             # Check collisions with non-moving entities
-            for non_move_entity in non_move_entities:
-                non_move_entity_bounds = non_move_entity.position_component.get_bounds()
-
-                if move_bounds.colliderect(non_move_entity_bounds):
-                    dx, dy = self.calculate_opposite_direction(
-                        move_bounds, non_move_entity_bounds
-                    )
-                    self.apply_steer(move_entity, dx, dy, delta)
+            self._update_move_to_non_moving_collision(delta, non_move_entities, move_entity, move_weight, move_bounds)
 
             # Check collisions with other moving entities
-            for other_entity in move_entities:
-                if move_entity is other_entity:
-                    continue
+            self._update_move_to_move_collision(delta, move_entities, move_entity, move_weight, move_bounds)
 
-                other_bounds = other_entity.position_component.get_bounds()
+    def _update_move_to_move_collision(self, delta, move_entities: list[Entity], move_entity: Entity, move_weight: float, move_bounds: pygame.Rect):
+        for other_entity in move_entities:
+            if move_entity is other_entity:
+                continue
 
-                if move_bounds.colliderect(other_bounds):
-                    dx, dy = self.calculate_opposite_direction(
-                        move_bounds, other_bounds
-                    )
+            other_collision_component = other_entity.get_component(
+                CollisionComponent
+            )
+            if other_collision_component is None:
+                continue
+            other_weight = other_collision_component.weight
+            other_bounds = other_entity.position_component.get_bounds()
 
-                    # Apply "half" negative steer to distribute the reaction force
-                    self.apply_steer(move_entity, dx * 0.5, dy * 0.5, delta)
+            if self._colliding(move_entity, other_entity):
+                dx, dy = self.calculate_opposite_direction(
+                    move_bounds, other_bounds
+                )
+
+                # Calculate weight ratios for both entities
+                total_weight = move_weight + other_weight
+                weight_ratio_self = other_weight / total_weight
+                weight_ratio_other = move_weight / total_weight
+
+                # Apply "half" negative steer to distribute the reaction force
+                self.apply_steer(
+                    move_entity, dx * 0.5, dy * 0.5, delta, weight_ratio_self
+                )
+                self.apply_steer(
+                    other_entity, -dx * 0.5, -dy * 0.5, delta, weight_ratio_other
+                )
+
+    def _update_move_to_non_moving_collision(self, delta, non_move_entities: list[Entity], move_entity: Entity, move_weight: float, move_bounds: pygame.Rect):
+        move_bounds = move_entity.position_component.get_bounds()
+        for non_move_entity in non_move_entities:
+            non_move_collision_component = non_move_entity.get_component(
+                CollisionComponent
+            )
+            if non_move_collision_component is None:
+                continue
+            non_move_weight = non_move_collision_component.weight
+            non_move_entity_bounds = non_move_entity.position_component.get_bounds()
+
+            if self._colliding(move_entity, non_move_entity):
+                dx, dy = self.calculate_opposite_direction(
+                    move_bounds, non_move_entity_bounds
+                )
+                weight_ratio = non_move_weight / (move_weight + non_move_weight)
+                self.apply_steer(move_entity, dx, dy, delta, weight_ratio)
+
+    def _colliding(self, e1: Entity, e2: Entity) -> bool:
+        collide_distance = (
+            e1.position_component.get_inner_radius()
+            + e2.position_component.get_inner_radius()
+        )
+        distance_between = e1.position_component.distance_to_center(
+            e2.position_component.get_center()
+        )
+        return distance_between < collide_distance / 2

@@ -20,11 +20,11 @@ class EnemyAISystem:
     def update(self, entities: list[Entity], delta):
         self._set_attackable_entities(entities)
 
-        for entity in entities:
-            enemy_ai_component = entity.get_component(EnemyAIComponent)
-            movement_component = entity.get_component(MovementComponent)
-            interaction_component = entity.get_component(InteractionComponent)
-            retreat_component = entity.get_component(RetreatComponent)
+        for enemy_entity in entities:
+            enemy_ai_component = enemy_entity.get_component(EnemyAIComponent)
+            movement_component = enemy_entity.get_component(MovementComponent)
+            interaction_component = enemy_entity.get_component(InteractionComponent)
+            retreat_component = enemy_entity.get_component(RetreatComponent)
             if (
                 enemy_ai_component is None
                 or movement_component is None
@@ -38,23 +38,16 @@ class EnemyAISystem:
                 continue
 
             # Target the heart by default
-            highest_priority_attackable = self._get_highest_priority_attackable()
-            if highest_priority_attackable is not None:
-                # Direct collisions with plant or protector is assigned instead of default heart target
-                enemy_entity_bounds = entity.position_component.get_bounds()
-                colliding_target_entity = self._get_attackable_collision_entity(
-                    enemy_entity_bounds
-                )
+            self._target_heart_position(movement_component)
 
-                if colliding_target_entity is not None:
-                    # potential interaction, colliding
-                    self._notify_interaction(entity, colliding_target_entity)
-                else:
-                    # no interaction, move to the heart
-                    self._set_move_target(
-                        movement_component,
-                        highest_priority_attackable.position_component,
-                    )
+            # Direct collisions with plant or protector is assigned instead of default heart target
+            colliding_target_entity = self._get_attackable_collision_entity(
+                enemy_entity
+            )
+
+            if colliding_target_entity is not None:
+                # potential interaction, colliding
+                self._notify_interaction(enemy_entity, colliding_target_entity)
 
     def _set_attackable_entities(self, entities: list[Entity]):
         self._attackable_entities = []
@@ -69,14 +62,18 @@ class EnemyAISystem:
             else:
                 self._attackable_entities.append(entity)
 
-    def _get_highest_priority_attackable(self):
+    def _target_heart_position(self, movement_component: MovementComponent):
         if len(self._attackable_entities) <= 0:
             return None
 
         highest_priority_attackable = self._attackable_entities[0]  # Sorted
-        return highest_priority_attackable
+        if highest_priority_attackable is not None:
+            self._set_move_target(
+                movement_component,
+                highest_priority_attackable.position_component,
+            )
 
-    def _get_attackable_collision_entity(self, enemy_entity_bounds):
+    def _get_attackable_collision_entity(self, enemy_entity: Entity):
         # TODO: put all collisions in a list
         # Rank and return top one:
         # We only want to fight the current interaction target
@@ -84,7 +81,14 @@ class EnemyAISystem:
         # 2. Attack priority
 
         for attackable in self._attackable_entities:
-            if attackable.position_component.intersects(enemy_entity_bounds):
+            collide_distance = (
+                attackable.position_component.get_inner_radius()
+                + enemy_entity.position_component.get_inner_radius()
+            )
+            distance_between = attackable.position_component.distance_to_center(
+                enemy_entity.position_component.get_center()
+            )
+            if distance_between < collide_distance / 2:
                 return attackable  # This attackable is colliding with the enemy entity
         return None  # None of attack_priority type collided
 
