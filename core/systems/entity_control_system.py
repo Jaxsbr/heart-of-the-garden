@@ -14,6 +14,7 @@ class EntityControlSystem:
     event_dispatcher: EventDispatcher
     selection_elapsed: float = field(default=0)
     selection_tick: float = field(default=0.2)
+    move_exclusion_zones: list[pygame.Rect] = field(default_factory=list)
 
     # selecting, indicates we just changes selection and want to ensure the
     # mouse action completes and does not immediately set a target where the
@@ -56,8 +57,13 @@ class EntityControlSystem:
 
     def _update_movement_target(self, entities: list[Entity], screen_offset):
         mouse_clicked = pygame.mouse.get_pressed()[0]
+        mouse_x, mouse_y = pygame.mouse.get_pos()
         if not mouse_clicked:
             return
+
+        for exclusion_zone in self.move_exclusion_zones:
+            if exclusion_zone.collidepoint((mouse_x, mouse_y)):
+                return
 
         for entity in entities:
             movement_component = entity.get_component(MovementComponent)
@@ -66,6 +72,5 @@ class EntityControlSystem:
                 continue
 
             self.target_setting = True
-            mouse_x, mouse_y = pygame.mouse.get_pos()
             movement_component.target_x = mouse_x - screen_offset[0]
             movement_component.target_y = mouse_y - screen_offset[1]

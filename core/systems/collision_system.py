@@ -5,6 +5,8 @@ import pygame
 from core.components.movement_component import MovementComponent
 from core.components.collision_component import CollisionComponent
 from core.entities.entity import Entity
+from core.entities.identifier import is_moving_entity
+
 
 @dataclass
 class CollisionSystem:
@@ -40,10 +42,8 @@ class CollisionSystem:
         return dx / magnitude, dy / magnitude
 
     def update(self, delta, entities: list[Entity]):
-        non_move_entities = [
-            e for e in entities if not e.get_component(MovementComponent)
-        ]
-        move_entities = [e for e in entities if e.get_component(MovementComponent)]
+        non_move_entities = [e for e in entities if not is_moving_entity(e)]
+        move_entities = [e for e in entities if is_moving_entity(e)]
 
         for move_entity in move_entities:
             move_collision_component = move_entity.get_component(CollisionComponent)
@@ -53,28 +53,35 @@ class CollisionSystem:
             move_bounds = move_entity.position_component.get_bounds()
 
             # Check collisions with non-moving entities
-            self._update_move_to_non_moving_collision(delta, non_move_entities, move_entity, move_weight, move_bounds)
+            self._update_move_to_non_moving_collision(
+                delta, non_move_entities, move_entity, move_weight, move_bounds
+            )
 
             # Check collisions with other moving entities
-            self._update_move_to_move_collision(delta, move_entities, move_entity, move_weight, move_bounds)
+            self._update_move_to_move_collision(
+                delta, move_entities, move_entity, move_weight, move_bounds
+            )
 
-    def _update_move_to_move_collision(self, delta, move_entities: list[Entity], move_entity: Entity, move_weight: float, move_bounds: pygame.Rect):
+    def _update_move_to_move_collision(
+        self,
+        delta,
+        move_entities: list[Entity],
+        move_entity: Entity,
+        move_weight: float,
+        move_bounds: pygame.Rect,
+    ):
         for other_entity in move_entities:
             if move_entity is other_entity:
                 continue
 
-            other_collision_component = other_entity.get_component(
-                CollisionComponent
-            )
+            other_collision_component = other_entity.get_component(CollisionComponent)
             if other_collision_component is None:
                 continue
             other_weight = other_collision_component.weight
             other_bounds = other_entity.position_component.get_bounds()
 
             if self._colliding(move_entity, other_entity):
-                dx, dy = self.calculate_opposite_direction(
-                    move_bounds, other_bounds
-                )
+                dx, dy = self.calculate_opposite_direction(move_bounds, other_bounds)
 
                 # Calculate weight ratios for both entities
                 total_weight = move_weight + other_weight
@@ -89,7 +96,14 @@ class CollisionSystem:
                     other_entity, -dx * 0.5, -dy * 0.5, delta, weight_ratio_other
                 )
 
-    def _update_move_to_non_moving_collision(self, delta, non_move_entities: list[Entity], move_entity: Entity, move_weight: float, move_bounds: pygame.Rect):
+    def _update_move_to_non_moving_collision(
+        self,
+        delta,
+        non_move_entities: list[Entity],
+        move_entity: Entity,
+        move_weight: float,
+        move_bounds: pygame.Rect,
+    ):
         move_bounds = move_entity.position_component.get_bounds()
         for non_move_entity in non_move_entities:
             non_move_collision_component = non_move_entity.get_component(

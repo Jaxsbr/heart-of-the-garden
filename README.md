@@ -1,5 +1,8 @@
 # Heart of the Garden
 
+This project explores the usage of entity system design
+
+
 ## Development
 
 1. [Concept](/docs/Concept.md)

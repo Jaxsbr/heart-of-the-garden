@@ -4,7 +4,7 @@ from typing import Callable
 import pygame
 
 from core.entities.entity import Entity
-from core.screen_position_helper import get_random_start_pos
+from core.screen_position_helper import get_random_out_bounds_pos
 
 
 @dataclass
@@ -19,7 +19,7 @@ class EnemySpawnSystem:
         self.spawn_elapsed += delta * 1
         if self.spawn_elapsed >= self.spawn_tick:
             self.spawn_elapsed = 0
-            start_pos = get_random_start_pos(self.screen_size)
+            start_pos = get_random_out_bounds_pos(self.screen_size)
             enemy = create_enemy_function(start_pos)
 
     def _set_spawn_config(self):

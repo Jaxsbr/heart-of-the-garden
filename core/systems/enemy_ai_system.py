@@ -7,6 +7,7 @@ from core.components.retreat_component import RetreatComponent
 from core.components.movement_component import MovementComponent
 from core.components.position_component import PositionComponent
 from core.entities.entity import Entity
+from core.entities.identifier import is_heart_entity
 from core.eventing.base_event import BaseEvent
 from core.eventing.event_dispatcher import EventDispatcher
 from core.eventing.event_types import EventTypes
@@ -56,8 +57,7 @@ class EnemyAISystem:
             if attackable_component is None:
                 continue
 
-            if attackable_component.attack_priority == AttackPriority.HIGH:
-                # Add the highest priority at the top of the list (heart)
+            if is_heart_entity(entity):
                 self._attackable_entities.insert(0, entity)
             else:
                 self._attackable_entities.append(entity)

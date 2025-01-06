@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from core.components.retreat_component import RetreatComponent
 from core.components.interaction_component import InteractionComponent
 from core.entities.entity import Entity
+from core.entities.identifier import is_heart_entity, is_protector_entity
 from core.eventing.base_event import BaseEvent
 from core.eventing.event_dispatcher import EventDispatcher
 from core.eventing.event_types import EventTypes
@@ -22,31 +23,29 @@ class InteractionManager:
     def process_interaction(self, interaction: InteractionSession, max_points: int):
         initiator, target = interaction.initiator, interaction.target
 
-        # Increment interaction duration
         initiator_interaction_component = initiator.get_component(InteractionComponent)
         initiator_retreat_component = initiator.get_component(RetreatComponent)
         target_interaction_component = target.get_component(InteractionComponent)
-        target_retreat_component = target.get_component(RetreatComponent)
 
         if (
             initiator_interaction_component is None
             or initiator_retreat_component is None
             or target_interaction_component is None
-            or target_retreat_component is None
         ):
             return False
 
-        initiator_interaction_component.interaction_duration += 100
-        target_interaction_component.interaction_duration += 1
+        if is_heart_entity(target):
+            # Heart interaction duration reduces health (e.g. enemy attacking)
+            target_interaction_component.interaction_duration += 1
+
+        if is_protector_entity(target):
+            target_interaction_component.interaction_duration += 5
+            initiator_interaction_component.interaction_duration += 100
 
         # Evaluate interaction outcomes
         if initiator_interaction_component.interaction_duration >= max_points:
             initiator_retreat_component.is_retreating = True
             initiator_interaction_component.interaction_duration = 0
-            return True  # Interaction ends
-        elif target_interaction_component.interaction_duration >= max_points:
-            # target_retreat_component.is_retreating = True
-            target_interaction_component.interaction_duration = 0
             return True  # Interaction ends
         return False  # Interaction continues
 
@@ -69,12 +68,9 @@ class InteractionSystem:
                 return True
         return False
 
-    def update(self, delta, entities: list[Entity]):
+    def update(self):
         completed_interactions = []
         for key, interaction in self.interaction_manager.interactions.items():
-            initiator = interaction.initiator
-            target = interaction.target
-
             if self.interaction_manager.process_interaction(
                 interaction, max_points=200
             ):

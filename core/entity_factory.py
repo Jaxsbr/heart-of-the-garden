@@ -8,6 +8,7 @@ from core.components.collision_component import CollisionComponent
 from core.components.controllable_component import ControllableComponent
 from core.components.direction_component import DirectionComponent
 from core.components.directional_rotation_component import DirectionalRotationComponent
+from core.components.gui_selection_component import GUISelectionComponent
 from core.components.interaction_component import InteractionComponent
 from core.components.enemy_ai_component import EnemyAIComponent
 from core.components.retreat_component import RetreatComponent
@@ -24,6 +25,7 @@ from core.resources.helpers import get_texture_resource
 from core.resources.manifest import AssetManifest
 from core.resources.resource_manager import ResourceManager
 from core.retreat_move_types import RetreatMoveTypes
+from core.ui.gui_types import GUITypes
 
 
 @dataclass
@@ -32,7 +34,7 @@ class EntityFactory:
     resource_manager: ResourceManager
     game_settings: GameSettings
 
-    def _create_living_entity(
+    def _create_base_entity(
         self, bounds: pygame.Rect, sprite_component: SpriteComponent
     ) -> Entity:
         base_entity = Entity(
@@ -46,7 +48,20 @@ class EntityFactory:
             velocity_component=VelocityComponent(),
             direction_component=DirectionComponent(),
         )
-        base_entity.add_component(SelectionComponent())
+        return base_entity
+
+    def _create_gui_entity(
+        self, bounds: pygame.Rect, sprite_component: SpriteComponent, gui_type: GUITypes
+    ) -> Entity:
+        base_entity = self._create_base_entity(bounds, sprite_component)
+        base_entity.add_component(GUISelectionComponent(gui_type=gui_type))
+        return base_entity
+
+    def _create_living_entity(
+        self, bounds: pygame.Rect, sprite_component: SpriteComponent
+    ) -> Entity:
+        base_entity = base_entity = self._create_base_entity(bounds, sprite_component)
+        # base_entity.add_component(SelectionComponent())
         base_entity.add_component(InteractionComponent())
         return base_entity
 
@@ -103,18 +118,30 @@ class EntityFactory:
         )
         protector.add_component(AttackableComponent(attack_priority=AttackPriority.LOW))
         protector.add_component(ControllableComponent())
-        protector.add_component(RetreatComponent())
-        protector.add_component(
-            RetreatBehaviorComponent(move_type=RetreatMoveTypes.BOLT)
-        )
         protector.add_component(
             CollisionComponent(weight=self.game_settings.protector_weight)
         )
         return protector
 
-    def create_plant(self):
-        # TODO: plant entity, must be attackable
-        pass
+    def create_plant(self, x, y):
+        # TODO: Use plant settings from config
+        left = x
+        top = y
+        width = self.game_settings.heart_size[0] // 2
+        height = self.game_settings.heart_size[1] // 2
+        plant = self._create_living_entity(
+            pygame.Rect(left, top, width, height),
+            SpriteComponent(
+                texture=get_texture_resource(
+                    self.asset_manifest, self.resource_manager, "plant1"
+                ),
+                width=width,
+                height=height,
+            ),
+        )
+        plant.add_component(AttackableComponent(attack_priority=AttackPriority.MEDIUM))
+        plant.add_component(CollisionComponent(weight=self.game_settings.heart_weight))
+        return plant
 
     def create_enemy(self, start_pos: pygame.Vector2):
         enemy_packet = self.get_variable_enemy_packet()

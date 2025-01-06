@@ -11,6 +11,7 @@ class ScreenScrollManager:
     screen_size: tuple[int, int]
     asset_manifest: AssetManifest
     resource_manager: ResourceManager
+    gui_bar_rect: pygame.Rect
     horizontal_image: pygame.Surface = field(init=False)
     vertical_image: pygame.Surface = field(init=False)
     screen_offset_x: float = field(default=0)

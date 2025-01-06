@@ -15,6 +15,11 @@
             "scale_x": 64,
             "scale_y": 64
         },
+        "plant1": {
+            "path": "assets/sprites/plant1.png",
+            "scale_x": 64,
+            "scale_y": 64
+        },
         "scroll_horizontal": {
             "path": "assets/scrolling/horizontal.png",
             "scale_x": 200,
@@ -24,6 +29,25 @@
             "path": "assets/scrolling/vertical.png",
             "scale_x": 20,
             "scale_y": 200
+        },
+        "gui_bar": {
+            "path": "assets/gui/gui_bar.png",
+            "scale_x": 768,
+            "scale_y": 128
+        },
+        "gui_buttons": {
+            "path": "assets/gui/gui_buttons.png",
+            "scale_x": 256,
+            "scale_y": 128
+        }
+    },
+    "sprites": {
+        "gui_buttons": {
+            "path": "assets/gui/gui_buttons.png",
+            "cols": 1,
+            "rows": 2,
+            "scale_x": 256,
+            "scale_y": 128
         }
     }
 }

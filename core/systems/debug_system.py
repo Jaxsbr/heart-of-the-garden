@@ -5,6 +5,8 @@ from core.components.controllable_component import ControllableComponent
 from core.components.interaction_component import InteractionComponent
 from core.components.movement_component import MovementComponent
 from core.entities.entity import Entity
+from core.entities.identifier import is_heart_entity
+
 
 @dataclass
 class DebugSystem:
@@ -28,6 +30,7 @@ class DebugSystem:
                 attackable is not None
                 and interaction is not None
                 and controllable is None
+                and is_heart_entity(entity)
             ):
                 texts.append("--HEART--")
                 texts.append(
